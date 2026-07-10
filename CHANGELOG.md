@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.0 - 2026-07-11
+
+- Add bounded background preloading for additional LinkedIn feed items.
+- Restore the previous viewport position after triggering LinkedIn infinite-scroll loading.
+- Pause preloading during recent user activity and modal/dialog states.
+
 ## 1.1.0 - 2026-07-11
 
 - Prefer language-independent LinkedIn expander selectors and `aria-expanded="false"` checks.

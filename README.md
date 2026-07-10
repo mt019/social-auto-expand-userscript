@@ -1,6 +1,6 @@
 # LinkedIn Auto Expand Userscript
 
-A Tampermonkey-compatible userscript that automatically expands collapsed LinkedIn text across UI languages.
+A Tampermonkey-compatible userscript that automatically expands collapsed LinkedIn text and preloads additional feed items across UI languages.
 
 It clicks visible expand controls such as:
 
@@ -11,6 +11,8 @@ It clicks visible expand controls such as:
 - 查看更多 / 顯示更多
 
 The script is intentionally conservative: it prefers LinkedIn's own collapsed text controls and only falls back to short, visible expand labels. It avoids collapse actions such as "see less".
+
+It also preloads additional feed items in the background by briefly triggering LinkedIn's infinite-scroll loading point and restoring the original viewport position.
 
 ## Install
 
@@ -32,6 +34,8 @@ It is designed for feeds, comments, profiles, articles, company pages, and job p
 ## Notes
 
 LinkedIn changes its DOM often. This script avoids relying on button language and combines LinkedIn expand component selectors, `aria-expanded="false"`, content-area checks, and visible fallback labels.
+
+Background preloading is intentionally bounded. It pauses during recent user activity, skips modal/dialog states, and stops after a limited number of stable-height checks.
 
 ## Development
 

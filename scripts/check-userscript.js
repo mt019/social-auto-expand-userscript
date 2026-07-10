@@ -7,7 +7,7 @@ const source = fs.readFileSync(scriptPath, "utf8");
 const requiredHeaders = [
   "// ==UserScript==",
   "// @name         LinkedIn Auto Expand",
-  "// @version      1.1.0",
+  "// @version      1.2.0",
   "// @match        https://www.linkedin.com/*",
   "// @match        https://linkedin.com/*",
   "// @grant        none",
@@ -36,6 +36,11 @@ if (!source.includes("EXPAND_TEXT_PATTERNS")) {
 
 if (!source.includes("LINKEDIN_EXPANDER_SELECTOR")) {
   console.error("Expected language-independent LinkedIn expander selectors.");
+  process.exit(1);
+}
+
+if (!source.includes("preloadMoreContent")) {
+  console.error("Expected background feed preloading support.");
   process.exit(1);
 }
 

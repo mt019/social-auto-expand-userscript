@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         LinkedIn Auto Expand
 // @namespace    https://github.com/mt019/linkedin-auto-expand-userscript
-// @version      1.1.0
-// @description  Automatically expands LinkedIn posts, comments, profiles, job descriptions, and other collapsed text across UI languages.
+// @version      1.2.0
+// @description  Automatically expands LinkedIn text and preloads more feed items across UI languages.
 // @author       mt019
 // @license      MIT
 // @match        https://www.linkedin.com/*
@@ -107,10 +107,21 @@
   ].join(",");
   const SCAN_INTERVAL_MS = 1200;
   const MUTATION_DEBOUNCE_MS = 250;
+  const PRELOAD_INTERVAL_MS = 5000;
+  const PRELOAD_RESTORE_DELAY_MS = 80;
+  const PRELOAD_SETTLE_DELAY_MS = 1400;
+  const PRELOAD_USER_ACTIVITY_COOLDOWN_MS = 1800;
+  const PRELOAD_MAX_ROUNDS = 30;
+  const PRELOAD_STABLE_HEIGHT_LIMIT = 4;
   const MAX_TEXT_LENGTH = 80;
 
   let scanTimer = null;
+  let preloadTimer = null;
   let observerTimer = null;
+  let isPreloading = false;
+  let preloadRounds = 0;
+  let stableHeightRounds = 0;
+  let lastUserActivityAt = 0;
 
   function normalizeText(text) {
     return text
@@ -194,9 +205,83 @@
     observerTimer = window.setTimeout(() => scan(), MUTATION_DEBOUNCE_MS);
   }
 
+  function getDocumentHeight() {
+    return Math.max(
+      document.body.scrollHeight,
+      document.body.offsetHeight,
+      document.documentElement.clientHeight,
+      document.documentElement.scrollHeight,
+      document.documentElement.offsetHeight,
+    );
+  }
+
+  function hasBlockingDialog() {
+    return Boolean(document.querySelector('[role="dialog"], .artdeco-modal, .msg-overlay-conversation-bubble'));
+  }
+
+  function isRecentUserActivity() {
+    return Date.now() - lastUserActivityAt < PRELOAD_USER_ACTIVITY_COOLDOWN_MS;
+  }
+
+  function markUserActivity() {
+    if (!isPreloading) {
+      lastUserActivityAt = Date.now();
+    }
+  }
+
+  function shouldPreloadMoreContent() {
+    return (
+      document.visibilityState === "visible" &&
+      !isPreloading &&
+      !isRecentUserActivity() &&
+      !hasBlockingDialog() &&
+      preloadRounds < PRELOAD_MAX_ROUNDS &&
+      stableHeightRounds < PRELOAD_STABLE_HEIGHT_LIMIT
+    );
+  }
+
+  function preloadMoreContent() {
+    if (!shouldPreloadMoreContent()) {
+      return;
+    }
+
+    const previousX = window.scrollX;
+    const previousY = window.scrollY;
+    const heightBefore = getDocumentHeight();
+    const previousScrollBehavior = document.documentElement.style.scrollBehavior;
+
+    isPreloading = true;
+    preloadRounds += 1;
+    document.documentElement.style.scrollBehavior = "auto";
+    window.scrollTo(previousX, heightBefore);
+    window.dispatchEvent(new Event("scroll"));
+
+    window.setTimeout(() => {
+      window.scrollTo(previousX, previousY);
+      document.documentElement.style.scrollBehavior = previousScrollBehavior;
+      isPreloading = false;
+
+      window.setTimeout(() => {
+        const heightAfter = getDocumentHeight();
+        stableHeightRounds = heightAfter > heightBefore ? 0 : stableHeightRounds + 1;
+        scan();
+      }, PRELOAD_SETTLE_DELAY_MS);
+    }, PRELOAD_RESTORE_DELAY_MS);
+  }
+
+  function addUserActivityListeners() {
+    const activityEvents = ["wheel", "touchstart", "keydown", "mousedown"];
+
+    for (const eventName of activityEvents) {
+      window.addEventListener(eventName, markUserActivity, { passive: true });
+    }
+  }
+
   function start() {
     scan();
+    addUserActivityListeners();
     scanTimer = window.setInterval(scan, SCAN_INTERVAL_MS);
+    preloadTimer = window.setInterval(preloadMoreContent, PRELOAD_INTERVAL_MS);
 
     const observer = new MutationObserver(scheduleScan);
     observer.observe(document.body, {
@@ -206,6 +291,7 @@
 
     window.addEventListener("beforeunload", () => {
       window.clearInterval(scanTimer);
+      window.clearInterval(preloadTimer);
       observer.disconnect();
     });
   }
