@@ -1,0 +1,16 @@
+{
+  "name": "linkedin-auto-expand-userscript",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tampermonkey userscript that automatically expands collapsed LinkedIn text.",
+  "scripts": {
+    "test": "node scripts/check-userscript.js"
+  },
+  "keywords": [
+    "linkedin",
+    "tampermonkey",
+    "userscript",
+    "violentmonkey"
+  ],
+  "license": "MIT"
+}
