@@ -4,7 +4,7 @@ A Tampermonkey-compatible userscript that automatically expands collapsed social
 
 The project is operations-oriented: one userscript, one release stream, and per-site profiles inside `SITE_PROFILES`.
 
-The install asset keeps the original filename, `linkedin-auto-expand.user.js`, so the existing release workflow and old install link continue to work.
+The install asset keeps the original filename, `linkedin-auto-expand.user.js`, so existing userscript update checks can keep working after the repo rename.
 
 ## Supported Sites
 
@@ -23,7 +23,7 @@ The install asset keeps the original filename, `linkedin-auto-expand.user.js`, s
 
 1. Install a userscript manager such as Tampermonkey or Violentmonkey.
 2. Open the raw userscript file:
-   `https://github.com/mt019/linkedin-auto-expand-userscript/releases/latest/download/linkedin-auto-expand.user.js`
+   `https://github.com/mt019/social-auto-expand-userscript/releases/latest/download/linkedin-auto-expand.user.js`
 3. Confirm installation in the userscript manager.
 4. Open or refresh LinkedIn or Facebook.
 

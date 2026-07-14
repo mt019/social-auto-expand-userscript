@@ -1,6 +1,6 @@
 {
   "name": "social-auto-expand-userscript",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "private": true,
   "description": "Tampermonkey userscript that expands collapsed social feed text and preloads more feed items.",
   "scripts": {

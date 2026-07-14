@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.1 - 2026-07-15
+
+- Rename the GitHub-facing project metadata to `social-auto-expand-userscript`.
+- Keep the release asset filename, `linkedin-auto-expand.user.js`, for update continuity.
+
 ## 2.0.0 - 2026-07-15
 
 - Convert the existing LinkedIn userscript into a unified social auto-expand userscript.

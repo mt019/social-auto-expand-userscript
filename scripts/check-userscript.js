@@ -7,7 +7,7 @@ const source = fs.readFileSync(scriptPath, "utf8");
 const requiredHeaders = [
   "// ==UserScript==",
   "// @name         Social Auto Expand",
-  "// @version      2.0.0",
+  "// @version      2.0.1",
   "// @match        https://www.linkedin.com/*",
   "// @match        https://linkedin.com/*",
   "// @match        https://www.facebook.com/*",
